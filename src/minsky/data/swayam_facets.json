@@ -1,0 +1,32 @@
+{
+  "_source": "https://swayam.gov.in Course Catalog, scraped 2026-09-16",
+  "national_coordinator": ["AICTE", "CEC", "IGNOU", "IIMB", "INI", "NCERT", "NIOS", "NITTTR", "NPTEL", "UGC"],
+  "course_mode": ["Self Paced", "Regular"],
+  "course_duration_weeks": [4, 6, 8, 10, 12, 15, 16, 24],
+  "educational_level": [
+    "Up to Secondary School", "Senior Secondary",
+    "UG-Year 1", "UG-Year 2", "UG-Year 3", "UG-Year 4",
+    "PG-Year 1", "PG-Year 2", "Doctoral / Post-Doctoral"
+  ],
+  "industry_sector": [
+    "Accounting and Financial Services", "Agriculture and Allied Industries", "Auto Components",
+    "Automobiles", "Aviation", "Ayush", "Banking", "Biotechnology", "Chemicals",
+    "Civil and Construction", "Consumer Durables", "Defence Manufacturing", "E-Commerce",
+    "Education and Training", "Electric Vehicle", "Electronics System Design & Manufacturing",
+    "Engineering and Capital Goods", "Environmental", "FMCG", "Food Processing",
+    "Gems and Jewellery", "Healthcare", "Infrastructure", "Insurance", "IT & ITES", "Legal",
+    "Manufacturing", "Media and Entertainment", "Medical Devices", "Metals and Mining", "MSME",
+    "Not Applicable", "Oil and Gas", "Others", "Paper & Packaging", "Pharmaceuticals", "Ports",
+    "Power", "Public Administration / Development Services", "Railways", "Real Estate",
+    "Renewable Energy", "Research and Development", "Retail", "Roads",
+    "Science and Technology", "Services", "Steel", "Telecommunications", "Textiles",
+    "Tourism and Hospitality", "Transport and Logistics"
+  ],
+  "credits": ["Yes", "No"],
+  "category": [
+    "Annual Refresher Programme in Teaching (ARPIT)", "Architecture and Planning", "Design",
+    "Energy, Climate and Sustainability", "Engineering and Technology", "Health Sciences",
+    "Humanities & Arts", "Law", "Management & Commerce", "Maths & Sciences",
+    "NPTEL Domain", "School", "Teacher Education"
+  ]
+}
