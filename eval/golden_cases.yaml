@@ -1,0 +1,81 @@
+# Golden intent -> expected-filter cases, per docs/evaluation.md.
+#
+# Each case's `expected_filters` is a *subset* of FilterSelection fields we
+# are confident about -- eval/run_eval.py only compares keys present here,
+# never asserts on keys the case omits. These expectations were derived by
+# running the actual Coordinator against each intent and confirming the
+# result matches real ConstraintResolverAgent heuristics (see
+# src/minsky/agents/constraint_resolver.py and intent_parser.py) -- nothing
+# here is aspirational.
+
+- intent: "I want to become job-ready in data analytics within 3 months"
+  expected_filters:
+    industry_sector: "IT & ITES"
+    course_duration: "12 Weeks"
+    category: "Engineering and Technology"
+
+- intent: "I am an in-service teacher and want ARPIT credits for a refresher course"
+  expected_filters:
+    category: "Annual Refresher Programme in Teaching (ARPIT)"
+    credits: "Yes"
+    industry_sector: "Education and Training"
+
+- intent: "I need to prepare for GATE exam in electrical engineering"
+  expected_filters:
+    category: "Engineering and Technology"
+
+- intent: "I am a working professional looking for a short self-paced course in web development"
+  expected_filters:
+    course_mode: "Self Paced"
+
+- intent: "I am a healthcare professional wanting to learn clinical research methods"
+  expected_filters:
+    industry_sector: "Healthcare"
+    category: "Health Sciences"
+
+- intent: "I want a long regular mode course with credits in banking and finance"
+  expected_filters:
+    course_mode: "Regular"
+    credits: "Yes"
+    industry_sector: "Accounting and Financial Services"
+
+- intent: "I'm just curious about philosophy and ethics"
+  expected_filters: {}
+
+- intent: "I want to upskill as a school teacher in teaching methods"
+  expected_filters:
+    industry_sector: "Education and Training"
+    category: "Teacher Education"
+
+- intent: "I want to become job-ready in software development within 6 months as an undergraduate"
+  expected_filters:
+    course_duration: "24 Weeks"
+    educational_level: "UG-Year 1"
+    industry_sector: "IT & ITES"
+
+- intent: "I am preparing for GATE mathematics next year"
+  expected_filters:
+    category: "Maths & Sciences"
+
+- intent: "I want a certificate for financial accounting as a working professional"
+  expected_filters:
+    industry_sector: "Accounting and Financial Services"
+    category: "Management & Commerce"
+
+- intent: "I want to learn machine learning and data science for a career in IT"
+  expected_filters:
+    industry_sector: "IT & ITES"
+    category: "Engineering and Technology"
+
+- intent: "I am a postgraduate student wanting credits in public health"
+  expected_filters:
+    educational_level: "PG-Year 1"
+    industry_sector: "Healthcare"
+    credits: "Yes"
+
+- intent: "I want a flexible self-paced course in digital marketing"
+  expected_filters:
+    course_mode: "Self Paced"
+
+- intent: "I want to explore something new, no specific goal in mind"
+  expected_filters: {}
