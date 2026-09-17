@@ -37,7 +37,7 @@ HTTP API, with real live SWAYAM course data:
 
 ```bash
 pip install -e ".[api]"
-uvicorn minsky.api:app --reload
+python -m uvicorn minsky.api:app --reload
 curl -X POST localhost:8000/resolve -H 'Content-Type: application/json' \
   -d '{"intent": "I want to become job-ready in data analytics within 3 months", "course_source": "live"}'
 ```

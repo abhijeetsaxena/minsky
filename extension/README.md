@@ -16,8 +16,12 @@ Run the minsky API locally first:
 ```bash
 cd minsky
 pip install -e ".[api]"
-uvicorn minsky.api:app --reload
+python -m uvicorn minsky.api:app --reload
 ```
+
+(Use `python -m uvicorn ...` rather than a bare `uvicorn ...` if your shell can't find
+the `uvicorn` command directly — its console-script entry point isn't always on `PATH`
+depending on how Python was installed.)
 
 By default it listens on `http://127.0.0.1:8000`.
 

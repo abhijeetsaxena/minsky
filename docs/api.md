@@ -29,8 +29,12 @@ Install the `api` extra, then run with `uvicorn`:
 
 ```bash
 pip install -e ".[api]"
-uvicorn minsky.api:app --reload
+python -m uvicorn minsky.api:app --reload
 ```
+
+(`python -m uvicorn ...` rather than a bare `uvicorn ...` — on some setups pip installs
+the package but its console-script entry point isn't on `PATH`; running it as a module
+always works since it only depends on `python` itself being on `PATH`.)
 
 By default this serves on `http://127.0.0.1:8000`.
 

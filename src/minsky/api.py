@@ -13,7 +13,8 @@ docs/api.md for what would need to change first (restrict `allow_origins` to
 the extension's real origin, add auth, add rate limiting / request size
 limits).
 
-Run with: uvicorn minsky.api:app --reload
+Run with: python -m uvicorn minsky.api:app --reload
+(a bare `uvicorn ...` may not be on PATH depending on how Python was installed)
 """
 
 from __future__ import annotations
