@@ -61,7 +61,11 @@ class FilterSelection:
 
 @dataclass
 class Course:
-    """One catalog entry (synthetic in v1, see data/sample_courses.json)."""
+    """One catalog entry (synthetic in v1, see data/sample_courses.json).
+
+    `url` defaults to "" for the synthetic catalog (which has none); the
+    live SwayamClient always populates it with a real, clickable course link.
+    """
 
     id: str
     title: str
@@ -74,6 +78,7 @@ class Course:
     credits: bool
     category: str
     keywords: list[str] = field(default_factory=list)
+    url: str = ""
 
 
 @dataclass

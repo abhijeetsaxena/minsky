@@ -49,9 +49,11 @@ implements the facets `FilterSelection` actually carries).
 
 ## Course field mapping
 
-The node selection asks for: `id title ncCode weeks credits industryOrSector ncrfLevel
-courseLanguage category { name } tags { name }`. Two fallback decisions worth calling
-out:
+The node selection asks for: `id title url ncCode weeks credits industryOrSector
+ncrfLevel courseLanguage category { name } tags { name }` (`url` is the real,
+clickable link to the course on `onlinecourses.swayam2.ac.in`, populated directly into
+`Course.url` — the synthetic sample catalog leaves this `""`). Two fallback decisions
+worth calling out:
 
 - **`Course.mode`** is always `"Unknown"`. The API exposes no mode/course-type scalar at
   all — querying for `mode`, `courseMode`, or `type` on the node returns a GraphQL

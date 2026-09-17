@@ -38,7 +38,7 @@ _XSSI_PREFIX = ")]}'"
 # back as a *list* of {name, category, parentId} objects, not a single
 # object).
 _NODE_FIELDS = (
-    "id title ncCode weeks credits industryOrSector ncrfLevel courseLanguage "
+    "id title url ncCode weeks credits industryOrSector ncrfLevel courseLanguage "
     "category { name } tags { name }"
 )
 
@@ -238,6 +238,7 @@ class SwayamClient:
             credits=bool(node.get("credits", 0)),
             category=category_name,
             keywords=keywords,
+            url=node.get("url") or "",
         )
 
 
