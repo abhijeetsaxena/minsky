@@ -65,6 +65,7 @@ def test_well_formed_json_produces_matching_intent():
     assert intent.confidence == 0.9
     # sanity: the client actually got called with the raw text
     assert client.calls[0]["user"] == _RAW_TEXT
+    assert parser.last_backend == "llm"
 
 
 # -- (b) fenced JSON ----------------------------------------------------------
@@ -103,6 +104,7 @@ def test_non_json_response_falls_back_to_rule_based_parser():
     expected = RuleBasedIntentParser().parse(_RAW_TEXT)
 
     assert intent == expected
+    assert parser.last_backend == "fallback"
 
 
 # -- (d) client raises -> fallback -------------------------------------------
@@ -116,6 +118,7 @@ def test_client_exception_falls_back_cleanly():
     expected = RuleBasedIntentParser().parse(_RAW_TEXT)
 
     assert intent == expected
+    assert parser.last_backend == "fallback"
 
 
 # -- (e) invalid goal_type / wrong types -> fallback -------------------------

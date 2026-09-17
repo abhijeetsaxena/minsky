@@ -112,21 +112,33 @@ class AnthropicLLMClient:
 
 
 class LLMIntentParser:
-    """`IntentParser` backed by an LLM, with graceful fallback on any failure."""
+    """`IntentParser` backed by an LLM, with graceful fallback on any failure.
+
+    `last_backend` records which path the most recent `.parse()` call actually
+    took ("llm" or "fallback") -- since the fallback is silent by design (see
+    `.parse()`'s docstring below), callers who need to know whether the LLM
+    call actually succeeded (e.g. the HTTP API's `parser_used` response field)
+    can inspect this after calling `.parse()`, rather than that fact being
+    unobservable from the outside.
+    """
 
     def __init__(self, client: LLMClient | None = None, fallback: IntentParser | None = None) -> None:
         self.client = client if client is not None else AnthropicLLMClient()
         self.fallback = fallback if fallback is not None else RuleBasedIntentParser()
+        self.last_backend: str | None = None
 
     def parse(self, raw_text: str) -> Intent:
         try:
             raw_response = self.client.complete(system=_SYSTEM_PROMPT, user=raw_text)
-            return self._parse_response(raw_text, raw_response)
+            intent = self._parse_response(raw_text, raw_response)
         except Exception:  # noqa: BLE001 -- intentional: any LLM/parsing failure degrades gracefully
             # Any failure whatsoever -- missing key, network error, rate
             # limit, malformed JSON, invalid field values -- degrades to the
             # fallback parser rather than crashing the pipeline.
+            self.last_backend = "fallback"
             return self.fallback.parse(raw_text)
+        self.last_backend = "llm"
+        return intent
 
     # -- response parsing / validation --------------------------------------
 

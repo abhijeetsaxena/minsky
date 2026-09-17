@@ -41,7 +41,8 @@ def test_resolve_with_defaults():
     assert response.status_code == 200
     body = response.json()
 
-    assert {"intent", "filters", "ranked_courses", "rationale"} <= set(body.keys())
+    assert {"intent", "filters", "ranked_courses", "rationale", "parser_used"} <= set(body.keys())
+    assert body["parser_used"] == "rule_based"
 
     # GoalType is a str Enum -- must serialize as its plain value, not an
     # Enum repr like "GoalType.JOB_READINESS".
@@ -85,6 +86,36 @@ def test_resolve_with_llm_parser_falls_back_without_api_key(monkeypatch):
         "skill_upgrade",
         "curiosity",
     }
+    # No ANTHROPIC_API_KEY -> LLMIntentParser silently falls back internally;
+    # parser_used must surface that rather than hiding it behind a plain 200.
+    assert body["parser_used"] == "llm_fallback_rule_based"
+
+
+def test_resolve_with_llm_parser_reports_llm_when_it_actually_ran(monkeypatch):
+    # Patch the *class* minsky.api uses for both construction (LLMIntentParser())
+    # and the isinstance() check inside _parser_used() -- a lambda wouldn't
+    # work as isinstance()'s second argument.
+    monkeypatch.setattr("minsky.api.LLMIntentParser", _StubLLMIntentParser)
+    response = client.post(
+        "/resolve",
+        json={"intent": _SAMPLE_INTENT, "parser": "llm"},
+    )
+    assert response.status_code == 200
+    assert response.json()["parser_used"] == "llm"
+
+
+class _StubLLMIntentParser:
+    """Minimal stand-in that behaves as if the real LLM call succeeded."""
+
+    def __init__(self):
+        self.last_backend = None
+
+    def parse(self, raw_text):
+        from minsky.agents.intent_parser import RuleBasedIntentParser
+
+        intent = RuleBasedIntentParser().parse(raw_text)
+        self.last_backend = "llm"
+        return intent
 
 
 @pytest.mark.parametrize("intent", ["", "   ", "\t\n"])

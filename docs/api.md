@@ -141,19 +141,37 @@ curl -X POST http://127.0.0.1:8000/resolve \
         "industry_sector": "IT & ITES",
         "credits": false,
         "category": "Engineering and Technology",
-        "keywords": ["..."]
+        "keywords": ["..."],
+        "url": ""
       },
       "score": 0.9,
       "reasons": ["..."]
     }
   ],
-  "rationale": "..."
+  "rationale": "...",
+  "parser_used": "rule_based"
 }
 ```
 
 Note `goal_type` comes back as its plain string value (e.g. `"job_readiness"`),
 not an Enum repr -- `GoalType` is a `str` Enum and FastAPI's JSON encoding
 handles it correctly.
+
+`course.url` is `""` for the synthetic sample catalog and a real, clickable
+`onlinecourses.swayam2.ac.in/.../preview` link when `course_source: "live"`
+(see [live-integration.md](live-integration.md)).
+
+`parser_used` reports what actually produced `intent` -- necessary because
+`LLMIntentParser` silently falls back to the rule-based parser on *any*
+failure (missing `ANTHROPIC_API_KEY`, missing `anthropic` package, network
+error, malformed model output), so a `200` response with `parser: "llm"` in
+the request does not by itself prove the LLM call succeeded. One of:
+
+- `"rule_based"` -- you requested `parser: "rule_based"` (or omitted it).
+- `"llm"` -- you requested `parser: "llm"` and the LLM call actually succeeded.
+- `"llm_fallback_rule_based"` -- you requested `parser: "llm"` but it fell
+  back; check that `ANTHROPIC_API_KEY` is set and the `anthropic` package is
+  installed (`pip install -e ".[llm]"`) wherever the API server is running.
 
 **Error responses:**
 

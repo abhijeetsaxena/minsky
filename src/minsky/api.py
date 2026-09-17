@@ -79,6 +79,19 @@ def _build_coordinator(request: ResolveRequest) -> Coordinator:
     return Coordinator(intent_parser=intent_parser, course_source=course_source)
 
 
+def _parser_used(intent_parser: object) -> str:
+    """What actually produced the Intent, made observable for API callers.
+
+    LLMIntentParser silently falls back to RuleBasedIntentParser on any
+    failure (see its docstring) -- without this, a caller who requested
+    "llm" has no way to tell whether the LLM call actually succeeded or the
+    response was quietly produced by the rule-based fallback instead.
+    """
+    if isinstance(intent_parser, LLMIntentParser):
+        return "llm" if intent_parser.last_backend == "llm" else "llm_fallback_rule_based"
+    return "rule_based"
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
@@ -96,4 +109,6 @@ def resolve(request: ResolveRequest):
         result = coordinator.solve(request.intent, top_n=request.top_n)
     except Exception as exc:  # noqa: BLE001 -- last-resort safety net, see module docstring
         return JSONResponse(status_code=500, content={"error": str(exc)})
-    return dataclasses.asdict(result)
+    response = dataclasses.asdict(result)
+    response["parser_used"] = _parser_used(coordinator.intent_parser)
+    return response
