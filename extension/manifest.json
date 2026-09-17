@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "minsky for SWAYAM",
+  "version": "0.1.0",
+  "description": "State your goal, get resolved SWAYAM filters and a ranked course shortlist — powered by a local minsky API instance.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://swayam.gov.in/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://swayam.gov.in/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "minsky settings"
+  }
+}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>minsky settings</title>
+    <style>
+      body {
+        width: 280px;
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 13px;
+        padding: 12px;
+        color: #1f2430;
+      }
+      h3 {
+        margin: 0 0 8px;
+        color: #1a3e8c;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 6px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      button {
+        margin-top: 12px;
+        width: 100%;
+        padding: 8px;
+        background: #1a3e8c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      #status {
+        margin-top: 8px;
+        font-size: 12px;
+      }
+      .hint {
+        font-size: 11px;
+        color: #777;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>minsky settings</h3>
+
+    <label for="apiBaseUrl">minsky API base URL</label>
+    <input id="apiBaseUrl" type="text" placeholder="http://127.0.0.1:8000" />
+    <div class="hint">Run locally with: uvicorn minsky.api:app</div>
+
+    <label for="parser">Intent parser</label>
+    <select id="parser">
+      <option value="rule_based">Rule-based (offline, deterministic)</option>
+      <option value="llm">LLM-backed (needs ANTHROPIC_API_KEY on the server)</option>
+    </select>
+
+    <label for="courseSource">Course data</label>
+    <select id="courseSource">
+      <option value="live">Live SWAYAM (real, current courses)</option>
+      <option value="sample">Sample (synthetic demo catalog)</option>
+    </select>
+
+    <button id="save">Save</button>
+    <button id="testConnection">Test connection</button>
+    <div id="status"></div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

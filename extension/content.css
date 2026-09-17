@@ -1,0 +1,156 @@
+/* Namespaced under #minsky-root so nothing here can leak onto or clash with
+   SWAYAM's own (Polymer-based) page styles. */
+
+#minsky-root {
+  all: initial;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#minsky-root * {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+#minsky-toggle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1a3e8c;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+#minsky-toggle:hover {
+  background: #15316f;
+}
+
+#minsky-panel {
+  position: absolute;
+  bottom: 68px;
+  right: 0;
+  width: 340px;
+  max-height: 560px;
+  overflow-y: auto;
+  background: #fff;
+  color: #1f2430;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+}
+
+#minsky-panel[hidden] {
+  display: none;
+}
+
+#minsky-panel h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: #1a3e8c;
+}
+
+#minsky-panel .minsky-subtitle {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+#minsky-intent-input {
+  width: 100%;
+  min-height: 64px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  resize: vertical;
+}
+
+#minsky-submit {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px;
+  background: #1a3e8c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#minsky-submit:disabled {
+  background: #99a7c4;
+  cursor: default;
+}
+
+#minsky-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+#minsky-results {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+#minsky-results .minsky-error {
+  color: #a4262c;
+  background: #fdecea;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+#minsky-results .minsky-section-title {
+  font-weight: 600;
+  margin: 10px 0 4px;
+  color: #1a3e8c;
+}
+
+#minsky-results .minsky-filter-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+#minsky-results .minsky-filter-key {
+  color: #666;
+}
+
+#minsky-results .minsky-course {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#minsky-results .minsky-course a {
+  color: #1a3e8c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#minsky-results .minsky-course a:hover {
+  text-decoration: underline;
+}
+
+#minsky-results .minsky-course-meta {
+  font-size: 11px;
+  color: #777;
+  margin-top: 2px;
+}
+
+#minsky-results .minsky-rationale {
+  white-space: pre-wrap;
+  background: #f5f7fb;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  margin-top: 8px;
+}

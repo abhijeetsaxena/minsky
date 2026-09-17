@@ -14,10 +14,12 @@ In scope:
 - CI (GitHub Actions) running lint + tests + eval on every push/PR.
 
 Out of scope for v1 (explicitly deferred, not forgotten):
-- Any live integration with swayam.gov.in (scraping, API calls, auth) — v1 works against the synthetic dataset only.
-- An HTTP API / browser extension / embeddable widget — natural Phase 2 once the core pipeline is validated, and only if there's a concrete consumer for it.
-- `LLMIntentParser` (the pluggable LLM-backed alternative to the rule-based parser) — the interface is designed for it (see architecture.md's extension points) but no implementation ships in v1, to keep the default path dependency-free and CI runnable with no API key.
+- ~~Any live integration with swayam.gov.in~~ — **done**, see [live-integration.md](live-integration.md). `LiveSwayamCourseSource` queries SWAYAM's real (undocumented, public, unauthenticated) course API, with verified filter mappings and graceful fallback to the sample dataset. Still opt-in, never the `Coordinator`'s default.
+- ~~An HTTP API / browser extension~~ — **done**, see [api.md](api.md) and [../extension/README.md](../extension/README.md). A FastAPI wrapper (`GET /health`, `GET /facets`, `POST /resolve`) plus a Manifest V3 browser extension that injects an intent panel directly on swayam.gov.in. (An embeddable widget beyond the extension remains undone — no concrete consumer for it yet.)
+- ~~`LLMIntentParser`~~ — **done**, see architecture.md's extension points and `src/minsky/agents/llm_intent_parser.py`. Anthropic-backed by default, gracefully falls back to `RuleBasedIntentParser` on any failure (missing key/package, network error, malformed output) — the default path stays dependency-free and CI-runnable with no API key.
 - Multi-portal generalization — v1 is scoped to SWAYAM's specific taxonomy; the resolver is designed to be retargetable, but retargeting itself is future work.
+- Publishing the extension to the Chrome Web Store, or hosting the API anywhere beyond localhost — both remain explicitly local/dev-only (see the security caveats in api.md and extension/README.md).
+- Full manual QA of the unpacked browser extension inside a real browser — the extension was built against the API's confirmed response schema and validated structurally (JSON/syntax checks), but loading and clicking through it in an actual Chrome instance is a manual step for whoever installs it (see extension/README.md).
 
 ## Milestones
 
