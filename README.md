@@ -16,6 +16,7 @@ The first concrete target is [SWAYAM](https://swayam.gov.in)'s course-catalog Fi
 - [docs/evaluation.md](docs/evaluation.md) — how correctness is validated
 - [docs/live-integration.md](docs/live-integration.md) — the live SWAYAM data source (real course data, verified filter mappings)
 - [docs/api.md](docs/api.md) — the HTTP API
+- [docs/local-llm.md](docs/local-llm.md) — the free, local, open-weight intent-parser backend (93% measured accuracy)
 - [extension/README.md](extension/README.md) — the browser extension
 
 ## Status
@@ -46,9 +47,16 @@ Or load [extension/](extension/) as an unpacked browser extension to get the sam
 result as a panel directly on [swayam.gov.in](https://swayam.gov.in) — see
 [extension/README.md](extension/README.md).
 
-An LLM-backed intent parser is also available (`pip install -e ".[llm]"`, set
-`ANTHROPIC_API_KEY`, pass `parser: "llm"` to `/resolve`) — see
-[docs/architecture.md](docs/architecture.md)'s extension points.
+Two LLM-backed intent parsers are also available, both implementing the same pluggable
+interface (see [docs/architecture.md](docs/architecture.md)'s extension points):
+
+- **Hosted** (`pip install -e ".[llm]"`, set `ANTHROPIC_API_KEY`, pass `parser: "llm"`) —
+  fast, costs money per call.
+- **Local, free, open-weight** (`pip install -e ".[local-llm]"`, pass `parser: "local_llm"`)
+  — runs Qwen2.5-3B-Instruct on CPU, no API key or network needed after a one-time ~2.1GB
+  download, measured 93% accuracy on the golden-case eval. See
+  [docs/local-llm.md](docs/local-llm.md) for the full benchmark story and setup notes
+  (including a Windows install workaround for machines without a C/C++ compiler).
 
 ## Development
 

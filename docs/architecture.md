@@ -53,6 +53,6 @@ Framework survey and prior-art research (full findings in [plan.md](plan.md#rese
 
 ## Extension points
 
-- Swap `RuleBasedIntentParser` for `LLMIntentParser` without touching any other agent (same `Intent` output contract).
+- Swap `RuleBasedIntentParser` for `LLMIntentParser` without touching any other agent (same `Intent` output contract). `LLMIntentParser` itself is backend-agnostic via the narrow `LLMClient` protocol — `AnthropicLLMClient` (hosted) and `LocalGGUFClient` (free, local, open-weight — see [local-llm.md](local-llm.md)) are two interchangeable implementations of it.
 - Point `ConstraintResolverAgent` at a different facet taxonomy JSON to retarget minsky at a different portal's filter set (e.g. another MOOC platform) without changing agent logic.
 - Add agents to the pipeline (e.g. a `DiversityAgent` to avoid recommending near-duplicate courses) by inserting a stage between Ranker and Explainer — each agent's typed contract keeps this additive.

@@ -104,10 +104,29 @@ def test_resolve_with_llm_parser_reports_llm_when_it_actually_ran(monkeypatch):
     assert response.json()["parser_used"] == "llm"
 
 
-class _StubLLMIntentParser:
-    """Minimal stand-in that behaves as if the real LLM call succeeded."""
+def test_resolve_with_local_llm_parser_reports_local_llm_when_it_actually_ran(monkeypatch):
+    # Same pattern as test_resolve_with_llm_parser_reports_llm_when_it_actually_ran above,
+    # but for parser: "local_llm" -- patches minsky.api.LLMIntentParser (not LocalGGUFClient
+    # directly) so the default test suite never needs the real llama-cpp-python /
+    # huggingface_hub packages or a real model download.
+    monkeypatch.setattr("minsky.api.LLMIntentParser", _StubLLMIntentParser)
+    response = client.post(
+        "/resolve",
+        json={"intent": _SAMPLE_INTENT, "parser": "local_llm"},
+    )
+    assert response.status_code == 200
+    assert response.json()["parser_used"] == "local_llm"
 
-    def __init__(self):
+
+class _StubLLMIntentParser:
+    """Minimal stand-in that behaves as if the real LLM call succeeded.
+
+    Used for both `parser: "llm"` and `parser: "local_llm"` -- `_build_coordinator()`
+    constructs `LLMIntentParser(...)` for both, so patching the class covers either
+    request's `_build_coordinator()` call once `minsky.api.LLMIntentParser` is patched.
+    """
+
+    def __init__(self, *args, **kwargs):
         self.last_backend = None
 
     def parse(self, raw_text):

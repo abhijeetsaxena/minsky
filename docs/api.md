@@ -84,14 +84,19 @@ Runs the full pipeline for one free-text intent.
 | --------------- | ------ | ------------- | -------------------------------------------------- |
 | `intent`        | string | -- (required) | must be non-empty / non-whitespace-only            |
 | `top_n`         | int    | `5`           | must be between 1 and 25 inclusive                 |
-| `parser`        | string | `"rule_based"`| `"rule_based"` or `"llm"`                          |
+| `parser`        | string | `"rule_based"`| `"rule_based"`, `"llm"`, or `"local_llm"`          |
 | `course_source` | string | `"sample"`    | `"sample"` or `"live"`                             |
 
-- `parser: "llm"` uses `LLMIntentParser`, which is safe to use even without
-  `ANTHROPIC_API_KEY` configured -- it falls back to the deterministic
-  `RuleBasedIntentParser` internally on any failure (missing key, network
-  error, malformed model output), so the API never needs special-case error
-  handling for this.
+- `parser: "llm"` uses `LLMIntentParser` with `AnthropicLLMClient` (hosted,
+  costs money per call, needs `ANTHROPIC_API_KEY`); `parser: "local_llm"` uses
+  the same `LLMIntentParser` with `LocalGGUFClient` instead (free, runs
+  locally on CPU, needs the `local-llm` extra installed -- see
+  [local-llm.md](local-llm.md) for the model choice, measured 93% golden-case
+  accuracy, and latency). Both are safe to request even when unconfigured --
+  `LLMIntentParser` falls back to the deterministic `RuleBasedIntentParser`
+  internally on any failure (missing key/package, network error, malformed
+  model output), so the API never needs special-case error handling for
+  either.
 - `course_source: "live"` uses `LiveSwayamCourseSource`, always constructed
   with a `SampleCourseSource()` fallback, so a live-API hiccup degrades
   gracefully instead of failing the request.
@@ -168,10 +173,16 @@ error, malformed model output), so a `200` response with `parser: "llm"` in
 the request does not by itself prove the LLM call succeeded. One of:
 
 - `"rule_based"` -- you requested `parser: "rule_based"` (or omitted it).
-- `"llm"` -- you requested `parser: "llm"` and the LLM call actually succeeded.
+- `"llm"` -- you requested `parser: "llm"` and the Anthropic call actually succeeded.
 - `"llm_fallback_rule_based"` -- you requested `parser: "llm"` but it fell
   back; check that `ANTHROPIC_API_KEY` is set and the `anthropic` package is
   installed (`pip install -e ".[llm]"`) wherever the API server is running.
+- `"local_llm"` -- you requested `parser: "local_llm"` and the local model
+  actually ran successfully.
+- `"local_llm_fallback_rule_based"` -- you requested `parser: "local_llm"` but
+  it fell back; check that `llama-cpp-python` and `huggingface_hub` are
+  installed (`pip install -e ".[local-llm]"`, see [local-llm.md](local-llm.md)
+  for the platform-specific wheel note) wherever the API server is running.
 
 **Error responses:**
 

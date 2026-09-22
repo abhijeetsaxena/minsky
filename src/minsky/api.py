@@ -30,6 +30,7 @@ from pydantic import BaseModel, Field, field_validator
 from minsky.agents.constraint_resolver import load_facets
 from minsky.agents.intent_parser import RuleBasedIntentParser
 from minsky.agents.llm_intent_parser import LLMIntentParser
+from minsky.agents.local_llm_client import LocalGGUFClient
 from minsky.coordinator import Coordinator, SampleCourseSource
 from minsky.swayam_client import LiveSwayamCourseSource
 
@@ -54,7 +55,7 @@ app.add_middleware(
 class ResolveRequest(BaseModel):
     intent: str
     top_n: int = Field(default=5, ge=1, le=25)
-    parser: Literal["rule_based", "llm"] = "rule_based"
+    parser: Literal["rule_based", "llm", "local_llm"] = "rule_based"
     course_source: Literal["sample", "live"] = "sample"
 
     @field_validator("intent")
@@ -68,6 +69,8 @@ class ResolveRequest(BaseModel):
 def _build_coordinator(request: ResolveRequest) -> Coordinator:
     if request.parser == "llm":
         intent_parser = LLMIntentParser()
+    elif request.parser == "local_llm":
+        intent_parser = LLMIntentParser(client=LocalGGUFClient())
     else:
         intent_parser = RuleBasedIntentParser()
 
@@ -79,16 +82,21 @@ def _build_coordinator(request: ResolveRequest) -> Coordinator:
     return Coordinator(intent_parser=intent_parser, course_source=course_source)
 
 
-def _parser_used(intent_parser: object) -> str:
+def _parser_used(requested: str, intent_parser: object) -> str:
     """What actually produced the Intent, made observable for API callers.
 
     LLMIntentParser silently falls back to RuleBasedIntentParser on any
     failure (see its docstring) -- without this, a caller who requested
-    "llm" has no way to tell whether the LLM call actually succeeded or the
-    response was quietly produced by the rule-based fallback instead.
+    "llm" or "local_llm" has no way to tell whether the LLM call actually
+    succeeded or the response was quietly produced by the rule-based fallback
+    instead. `requested` is echoed back unchanged on success so "llm" and
+    "local_llm" are distinguishable in the response rather than both
+    collapsing into a generic "llm".
     """
     if isinstance(intent_parser, LLMIntentParser):
-        return "llm" if intent_parser.last_backend == "llm" else "llm_fallback_rule_based"
+        if intent_parser.last_backend == "llm":
+            return requested
+        return f"{requested}_fallback_rule_based"
     return "rule_based"
 
 
@@ -110,5 +118,5 @@ def resolve(request: ResolveRequest):
     except Exception as exc:  # noqa: BLE001 -- last-resort safety net, see module docstring
         return JSONResponse(status_code=500, content={"error": str(exc)})
     response = dataclasses.asdict(result)
-    response["parser_used"] = _parser_used(coordinator.intent_parser)
+    response["parser_used"] = _parser_used(request.parser, coordinator.intent_parser)
     return response
