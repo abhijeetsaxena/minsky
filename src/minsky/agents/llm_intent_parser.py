@@ -27,12 +27,30 @@ import os
 import re
 from typing import Protocol
 
+from minsky.agents.constraint_resolver import load_facets
 from minsky.agents.intent_parser import IntentParser, RuleBasedIntentParser
 from minsky.schema import GoalType, Intent
 
 _DEFAULT_MODEL = "claude-haiku-4-5-20251001"
 
-_SYSTEM_PROMPT = """\
+
+def _build_system_prompt() -> str:
+    """Build the extraction prompt from the real SWAYAM facet taxonomy.
+
+    `educational_level`/`industry_sector` are posed as a closed choice from
+    the actual taxonomy values rather than open freeform text. This was
+    measured (see docs/local-llm.md) to take a small local model's accuracy
+    on the golden-case eval from 47% to 93% -- ConstraintResolverAgent's
+    fuzzy-matcher can't reliably bridge a model's loose paraphrase (e.g.
+    "IT") onto the real value ("IT & ITES"), but a model asked to choose
+    from the explicit list gets it right far more often. This is a strict
+    improvement for any backend, not a local-model-specific hack, so both
+    AnthropicLLMClient and a local GGUF client share this one prompt.
+    """
+    facets = load_facets()
+    sectors = ", ".join(f'"{s}"' for s in facets["industry_sector"])
+    levels = ", ".join(f'"{s}"' for s in facets["educational_level"])
+    return f"""\
 You extract a structured "learning intent" from a learner's free-text goal.
 
 Respond with ONLY a single JSON object -- no prose, no explanation, no \
@@ -42,20 +60,29 @@ markdown code fence -- with exactly these keys:
 "skill_upgrade", "curiosity"
 - "topics": array of short strings naming the subject(s) the learner wants \
 to study
-- "max_duration_weeks": integer number of weeks the learner is willing to \
-spend, or null if not stated
+- "max_duration_weeks": integer number of WEEKS the learner is willing to \
+spend, or null if not stated. Always convert: 1 month = 4 weeks \
+(e.g. "3 months" -> 12, "6 weeks" -> 6).
 - "preferred_mode": "Self Paced", "Regular", or null if not stated
 - "preferred_language": string language name, or null if not stated
 - "needs_credits": true, false, or null if not stated
-- "educational_level": freeform string describing the learner's current \
-educational level (e.g. "undergraduate"), or null if not stated
-- "industry_sector": freeform string naming the industry/sector the intent \
-relates to (e.g. "IT"), or null if not stated
+- "educational_level": pick the SINGLE closest matching value EXACTLY as \
+written from this list: [{levels}], or null if nothing fits.
+- "industry_sector": pick the SINGLE closest matching value EXACTLY as \
+written from this list: [{sectors}], or null if nothing fits. Infer the \
+sector even if not explicitly named -- e.g. "software"/"data"/"programming"/\
+"machine learning" -> "IT & ITES"; "teacher"/"teaching"/"school" -> \
+"Education and Training"; "accounting"/"financial"/"banking" -> \
+"Accounting and Financial Services"; "clinical"/"health"/"medical" -> \
+"Healthcare".
 - "confidence": your own self-rated confidence in this extraction, a float \
 between 0 and 1
 
-Output ONLY the JSON object.
+Output ONLY the JSON object, no other text.
 """
+
+
+_SYSTEM_PROMPT = _build_system_prompt()
 
 _FENCE_RE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.DOTALL)
 
